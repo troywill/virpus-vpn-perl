@@ -1,0 +1,186 @@
+#+TITLE:     blog.shilohsystem.com
+#+AUTHOR:    
+#+EMAIL:     troydwill@gmail.com
+#+DATE:      2012-12-04 Tue
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:2 num:nil toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+* 2012
+** Installing shilohsystem.com on a [[Virpus.com]] CentOS VPN server
+   | IP Address          | 50.115.161.205   |
+   | IPv4 Address        | 2                |
+   | Node                | ovznode84        |
+   | Disk Space          | 40 GB            |
+   | Virtualization Type | OpenVZ           |
+   | Hostname            | shilohsystem.com |
+   | Operating System    | CentOS 6 32 bit  |
+   | IPv6 Address        | 3                |
+   | Bandwidth           | 1000 GB          |
+   | Memory              | 512 MB           |
+   | Burst               | 1 GB             |
+*** A well organized website: [[http://www.server-world.info/en/note?os=CentOS_6&p=install]]
+*** Step by Step    
+1. I set the root password
+2. I backed up the /etc /var/ and /boot directories
+   #+begin_src perl :tangle backup.pl :shebang #!/usr/bin/env perl
+     use warnings;
+     use strict;
+     my $source = '50.115.161.205:/';
+     my $destination = '/var/backups/shilohsystem.com.thursday.nov15.postinstall';
+     my $exclude = "--exclude '/proc/*' --exclude aquota.dev --exclude aquota.user --exclude '/sys/*' --exclude '/dev/*' --exclude '/tmp/*' --exclude '/home/troy/video/' --exclude '/media/' --exclude '/usr/' --exclude '/var/cache' --exclude '/home/troy/.cache/' --exclude '/stow/ruby-1.9.3_p194'";
+     my $command = "rsync --archive --verbose --delete $exclude $source $destination ";
+     print "=> $command\n";
+     system($command);
+    #+end_src
+3. I copied my ssh key
+4. I updated the CentOS system
+   #+begin_src sh
+     yum update
+     # 14: PYCURL ERROR 6 - "Couldn't resolve host 'mirrorlist.centos.org'"
+   #+end_src
+5. I hit the first Virpus.com snafu: no nameserver
+6. I fixed this by adding a public nameserver to /etc/resolv.con
+   #+begin_example
+     # /etc/resolv.conf
+     # https://developers.google.com/speed/public-dns/
+     nameserver 8.8.8.8
+     nameserver 8.8.4.4
+#+end_example
+** Setting up an Apache Virtual Host on a Virpus.com CentOS VPN server
+   I set up http://blog.shilohsystem.com on Wednesday, November 14, 2012. I pointed [[http://blog.shilohsystem.com]] to my [[http://Virpus.com][Virpus.com]] [[http://wiki.openvz.org/Main_Page][OpenVZ]] VPN server running CentOS at my [[http://en.wikipedia.org/wiki/Domain_name_registrar][domain name registrar]] [[http://www.namecheap.com/][Namecheap.com]] and then configured a blog.shilohsystem.com virtual host with Apache.
+*** Add blog.shilohsystem.com domain at Namecheap.com registrar.
+    I logged into my account and went to Host Management, All Host Records. I modified the shilohsystem.com domain as follows:
+    | Sub Domain |     IP Address | Record Type | MX Pref |  TTL |
+    |------------+----------------+-------------+---------+------|
+    | blogs      | 50.115.161.205 | A (Address) | n/a     | 1800 |
+*** Set up blog.shilohsystem.com on Apache in /etc/httpd/conf/httpd.conf
+**** I uncommented line 990 in /etc/httpd/conf/httpd.conf
+#+begin_example
+NameVirtualHost *:80
+#+end_example
+**** I set up blog.shilohsystem.com virtual host at the end of /etc/httpd/conf/httpd.conf.
+#+begin_example
+<VirtualHost *:80>                                                           
+    ServerAdmin troydwill@gmail.com
+    DocumentRoot /var/www/html/blog.shilohsystem.com
+    ServerName blog.shilohsystem.com
+    ErrorLog logs/blog.shilohsystem.com-error_log
+    CustomLog logs/blog.shilohsystem.com-access_log common
+</VirtualHost>
+#+end_example    
+**** I restarted Apache
+    See [[http://httpd.apache.org/docs/2.2/stopping.html][Stopping and Restarting]] on the main offical Apache website.
+    #+begin_src sh
+    apachectl -k graceful
+    #+end_src
+*** Everything works!
+** Blogging with Emacs Org Mode, the options template
+I write my blog entries with Emacs Org mode. I export Emacs Org mode text files to html which I then push up to my server with Rsync. Org mode has a publishing feature to upload the html files but I haven't figured out how it works yet.
+*** Export Options Template  :noexport:
+** Developing a Virpus.com VPN Backup Strategy
+#+begin_src perl
+  #!/usr/bin/env perl
+  
+  use warnings;
+  use strict;
+  my $source = 'shilohsystem.com:/';
+  my $destination = '/var/backups/shilohsystem.com.november.15.2012';
+  my $exclude = "--exclude '/proc/*' --exclude aquota.dev --exclude aquota.user --exclude '/sys/*' --exclude '/dev/*' --exclude '/tmp/*' --ex\
+  clude '/home/troy/video/' --exclude '/media/' --exclude '/usr/' --exclude '/var/cache' --exclude '/home/troy/.cache/' --exclude '/stow/ruby\
+  -1.9.3_p194'";
+  my $command = "rsync --archive --verbose --delete $exclude $source $destination ";
+  print "=> $command\n";
+  system($command);
+#+end_src
+** virpus-vpn-perl ( https://github.com/troywill/virpus-vpn-perl )
+** Perl SMTP: Sending Mail
+- I removed sendmail and installed postfix
+*** Contents of /etc/postfix/main.cf
+#+BEGIN_EXAMPLE
+queue_directory = /var/spool/postfix
+command_directory = /usr/sbin
+daemon_directory = /usr/libexec/postfix
+data_directory = /var/lib/postfix
+mail_owner = postfix
+myhostname = shilohsystem.com
+mydomain = shilohsystem.com
+myorigin = $mydomain
+inet_interfaces = all
+inet_protocols = all
+mydestination = $myhostname, localhost.$mydomain, localhost
+unknown_local_recipient_reject_code = 550
+mynetworks = aaa.bbb.ccc.ddd, 127.0.0.0/8
+relay_domains = aaa.bbb.ccc.ddd
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+debug_peer_level = 2
+debugger_command =
+         PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
+         ddd $daemon_directory/$process_name $process_id & sleep 5
+sendmail_path = /usr/sbin/sendmail.postfix
+newaliases_path = /usr/bin/newaliases.postfix
+mailq_path = /usr/bin/mailq.postfix
+setgid_group = postdrop
+html_directory = no
+manpage_directory = /usr/share/man
+sample_directory = /usr/share/doc/postfix-2.6.6/samples
+readme_directory = /usr/share/doc/postfix-2.6.6/README_FILES
+#+END_EXAMPLE
+
+*** Verify telnet smtp
+#+BEGIN_SRC sh
+[troy@shilohsystem.com]$ telnet shilohsystem.com smtp
+[troy@dell smtp-perl]$ telnet shilohsystem.com smtp
+Trying aaa.bbb.ccc.ddd...
+Connected to shilohsystem.com.
+Escape character is '^]'.
+220 shilohsystem.com ESMTP Postfix
+#+END_SRC
+*** Perl Net::SMTP program, from "Network Programming with Perl" by Lincoln Stein, page 169
+#+BEGIN_SRC perl :tangle fig7.2.pl :shebang #!/usr/bin/env perl
+  use Modern::Perl;
+  use Net::SMTP;
+  my $msg = <<'END';
+  From: Troy Will <troydwill@gmail.com>
+  To:   Troy Will <troydwill@gmail.com>
+  Subject: Working Perl Net::SMTP program December 5, 2012
+  
+  This is just a simple e-mail message.
+  END
+  mail($msg,'shilohsystem.com') or die "mail failed: $!";
+    
+  sub mail {
+    my ($mesg,$server) = @_;
+    
+    my ($header,$body) = split /\n\n/,$msg,2;
+    return warn "no header" unless $header && $body;
+  
+    $header =~ s/\n\s+/ /gm;
+  
+    my (%fields) = $header =~ /([\w-]+):\s+(.+)$/mg;
+    my $from = $fields{From} or return warn "no From field";
+    my @to = split /\s*,\s*/,$fields{To} or return warn "no To field";
+  
+    push @to,split /\s*,\s*/,$fields{Cc} if $fields{Cc};
+  
+    my $smtp = Net::SMTP->new($server) or return warn "couldn't open server: $!";
+    $smtp->mail($from) or return warn "$smtp->message: $!";
+  
+    my @ok = $smtp->recipient(@to,{SkipBad=>1}) or return warn $smtp->message;
+  
+    warn $smtp->message unless @ok == @to;
+    $smtp->data($msg);
+    
+    $smtp->quit;
+  }
+#+END_SRC
+* 2013
+** Creating a Shiloh System or Arch Linux package
