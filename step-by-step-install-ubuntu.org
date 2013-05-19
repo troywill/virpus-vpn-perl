@@ -1,0 +1,179 @@
+* [10/10] Ubuntu Debian Install Thursday, May 16, 2013
+  1. [X] Login at [[http://manage.virpus.com/][http://manage.virpus.com/]]
+  2. [X] Reinstall Ubuntu 10.04 x86 64 bit on OpenVZ vitualization container
+  3. [X] Change root password
+  4. [X] Log in as root
+  5. [X] Update system
+     1. [X] upgrade
+	#+BEGIN_SRC sh
+          # Retrieve new lists of packages
+          apt-get update
+          # Perform an upgrade
+          apt-get upgrade
+	#+END_SRC
+     2. [X] Keep current configuration file `/etc/cron.daily/apt'
+     3. [X] Keep current configuration file `/etc/init/mountall.conf'
+     4. [X] Keep current configuration file `/etc/init/portmap.conf'
+     5. [X] Keep current configuration file `/etc/init/ssh.conf'
+     6. [X] Reboot
+  6. [X] Install GNU C and C++ build system (build-essential package)
+     #+BEGIN_SRC sh
+     apt-get install build-essential
+     #+END_SRC
+  7. [X] Install GNU Stow
+     #+BEGIN_SRC sh
+     apt-get install stow
+     #+END_SRC
+  8. [5/5] Install Ruby 1.9.2 with RVM
+     1. [X] Install curl
+	#+BEGIN_SRC sh
+	  apt-get install curl
+	#+END_SRC
+     2. [X] Read RVM documentation
+	1. [X] https://rvm.io/
+	2. [X] https://rvm.io/rvm/install/
+     3. [X] Add user troy, mike
+	- [X] adduser troy
+	- [X] adduser mike
+     4. [X] Add troy to sudoers
+	#+BEGIN_SRC sh
+          visudo
+	#+END_SRC
+	#+BEGIN_EXAMPLE
+           # User privilege specification
+          root    ALL=(ALL) ALL
+          troy    ALL=(ALL) ALL
+	#+END_EXAMPLE
+     5. [X] Install RVM with Ruby 1.9.2
+	#+BEGIN_SRC sh :tangle /tmp/rvm-rails-ruby.sh :shebang #!/bin/sh
+          su troy
+          cd
+          \curl -L https://get.rvm.io | bash -s stable --ruby=1.9.2 --autolibs=3 --autolibs=enabled
+	#+END_SRC
+	#+BEGIN_EXAMPLE
+          troy@troywill:~$ \curl -L https://get.rvm.io | bash -s stable --ruby=1.9.2 --autolibs=3 --autolibs=enabled
+            % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                           Dload  Upload   Total   Spent    Left  Speed
+          100 13707  100 13707    0     0   3891      0  0:00:03  0:00:03 --:--:--  3891
+          Please read and follow further instructions.
+          Press ENTER to continue.
+          Downloading RVM from wayneeseguin branch stable
+            % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                           Dload  Upload   Total   Spent    Left  Speed
+          100 1062k  100 1062k    0     0   600k      0  0:00:01  0:00:01 --:--:-- 2159k
+          
+          Installing RVM to /home/troy/.rvm/
+              Adding rvm PATH line to /home/troy/.bashrc /home/troy/.zshrc.
+              Adding rvm loading line to /home/troy/.bash_profile /home/troy/.zprofile.
+          
+            ,* WARNING: You're using ~/.profile, make sure you load it,
+              add the following line to ~/.bash_profile if it exists
+              otherwise add it to ~/.bash_login:
+          
+                source ~/.profile
+          
+          
+          # RVM:  Shell scripts enabling management of multiple ruby environments.
+          # RTFM: https://rvm.io/
+          # HELP: http://webchat.freenode.net/?channels=rvm (#rvm on irc.freenode.net)
+          # Cheatsheet: http://cheat.errtheblog.com/s/rvm
+          # Screencast: http://screencasts.org/episodes/how-to-use-rvm
+          
+          # In case of any issues run 'rvm requirements' or read 'rvm notes'
+          
+          Installation of RVM in /home/troy/.rvm/ is almost complete:
+          
+            ,* To start using RVM you need to run `source /home/troy/.rvm/scripts/rvm`
+              in all your open shell windows, in rare cases you need to reopen all shell windows.
+          
+          # troy,
+          #
+          #   Thank you for using RVM!
+          #   I sincerely hope that RVM helps to make your life easier and
+          #   more enjoyable!!!
+          #
+          # ~Wayne
+          
+          
+          
+          rvm 1.20.9 (stable) by Wayne E. Seguin <wayneeseguin@gmail.com>, Michal Papis <mpapis@gmail.com> [https://rvm.io/]
+          
+          Searching for binary rubies, this might take some time.
+          No binary rubies available for: ubuntu/10.04/x86_64/ruby-1.9.2-p320.
+          Continuing with compilation. Please read 'rvm mount' to get more information on binary rubies.
+          Installing requirements for ubuntu, might require sudo password.
+          [sudo] password for troy:
+          Installing required packages: bash, curl, patch, bzip2, ca-certificates, gawk, g++, gcc, make, libc6-dev, patch, openssl, ca-certificates, libreadline6, libreadline6-dev, curl, zlib1g, zlib1g-dev, libssl-dev, libyaml-dev, libsqlite3-dev, sqlite3, libxml2-dev, libxslt1-dev, autoconf, libc6-dev, libgdbm-dev, libncurses5-dev, automake, libtool, bison, pkg-config, libffi-dev....................................................................................................................................
+          Installing Ruby from source to: /home/troy/.rvm/rubies/ruby-1.9.2-p320, this may take a while depending on your cpu(s)...
+          ruby-1.9.2-p320 - #downloading ruby-1.9.2-p320, this may take a while depending on your connection...
+            % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                           Dload  Upload   Total   Spent    Left  Speed
+          100 8770k  100 8770k    0     0   398k      0  0:00:21  0:00:21 --:--:--  338k
+          ruby-1.9.2-p320 - #extracting ruby-1.9.2-p320 to /home/troy/.rvm/src/ruby-1.9.2-p320
+          ruby-1.9.2-p320 - #extracted to /home/troy/.rvm/src/ruby-1.9.2-p320
+          ruby-1.9.2-p320 - #configuring................................................................................................................................................................................................................................................................................................................................................................................................................................
+          ruby-1.9.2-p320 - #compiling.............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+          ruby-1.9.2-p320 - #installing ....................
+          Retrieving rubygems-1.8.25
+            % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                           Dload  Upload   Total   Spent    Left  Speed
+          100  371k  100  371k    0     0  1252k      0 --:--:-- --:--:-- --:--:-- 1736k
+          Extracting rubygems-1.8.25 ...
+          Removing old Rubygems files...
+          $LANG was empty, setting up LANG=C, if it fails again try setting LANG to something sane and try again.
+          Installing rubygems-1.8.25 for ruby-1.9.2-p320...................
+          Installation of rubygems completed successfully.
+          Saving wrappers to '/home/troy/.rvm/wrappers/ruby-1.9.2-p320'........
+          
+          ruby-1.9.2-p320 - #adjusting #shebangs for (gem irb erb ri rdoc testrb rake).
+          ruby-1.9.2-p320 - #importing default gemsets, this may take time.......................
+          Install of ruby-1.9.2-p320 - #complete 
+          Creating alias default for ruby-1.9.2-p320.
+          Recording alias default for ruby-1.9.2-p320.
+          Creating default links/files
+          Saving wrappers to '/home/troy/.rvm/bin'........
+	#+END_EXAMPLE
+  9. [X] Install Git
+     #+BEGIN_SRC sh
+       apt-get install git-core gitosis
+     #+END_SRC
+  10. [3/3] Install Heroku Toolkit
+      1. [X] Install client
+	 #+BEGIN_SRC sh
+           # Run as non-privileged user (i.e. not root)
+           wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+	 #+END_SRC
+      2. [X] Generate a public key
+	 #+BEGIN_SRC sh
+           ssh-keygen -C"$(id -un)@$(hostname)-$(date --rfc-3339=date)"
+	 #+END_SRC
+      3. [X] Add the public key to Heroku account with the heroku client
+	 #+BEGIN_SRC sh
+	   /heroku keys:add
+           # /heroku keys:add ~/.ssh/id_rsa.pub # (Add key explictly)
+	 #+END_SRC
+  11. [X] Install Ruby on Rails 
+  12. [X] Build and install Emacs
+      #+BEGIN_SRC sh
+        mkdir devel
+        cd devel
+        wget http://ftpmirror.gnu.org/emacs/emacs-24.3.tar.gz
+        tar -xf emacs-24.3.tar.gz
+        cd emacs-24.3
+        
+        ./configure --prefix=/usr/local \
+            --libexecdir=/usr/local/lib \
+            --localstatedir=/var \
+            --docdir=/usr/local/share/doc/emacs \
+            --infodir=/usr/local/share/info \
+            --mandir=/usr/local/share/man \
+            --without-sound \
+            --without-x
+        
+        make
+        
+        sudo make DESTDIR=/stow/emacs-24.3 install
+        sudo stow -v --dir=/stow --target=/ emacs-24.3
+      #+END_SRC
+  13. [ ] Install PostgreSQL
+      

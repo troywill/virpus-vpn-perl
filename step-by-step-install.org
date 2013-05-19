@@ -1,6 +1,6 @@
 * Install Saturday, April 27, 2013
 ** A well organized website: [[http://www.server-world.info/en/note?os=CentOS_6&p=install]]
-** [12/15] Step by Step    
+** COMMENT [12/14] Step by Step    
 1. [X] Set the root password
 2. [X] (Optional) I backed up the /etc /var/ and /boot directories
    #+begin_src perl :tangle bin/backup.pl :shebang #!/usr/bin/env perl
@@ -107,11 +107,38 @@
     #+END_SRC
 11. [X] Stow Ruby
     1. [X] yum install readline-devel openssl-devel
-12. [ ] Install Rails
-    #+BEGIN_SRC sh
-      yum install sqlite-devel
-      gem install rails --no-ri --no-rdoc
-    #+END_SRC
+    2. [X] build and install ruby 
+       #+BEGIN_SRC sh
+         wget ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p320.tar.gz
+         tar -xf ruby-1.9.2-p320.tar.gz
+         cd ruby-1.9.2-p320
+         ./configure --prefix=/usr/local --bindir=/usr/local/bin/ --mandir=/usr/local/man --disable-install-doc --disable-install-rdoc --disable-install-capi
+       #+END_SRC
+12. [0/3] Install Rails
+    1. [ ] gem install
+       #+BEGIN_SRC sh
+         yum install sqlite-devel
+         gem install rails --version 3.2.11 --no-ri --no-rdoc
+       #+END_SRC
+    2. Error
+       #+BEGIN_EXAMPLE
+                ERROR:  Error installing rails:
+                 actionpack requires rack (~> 1.4.0, runtime)
+       #+END_EXAMPLE
+       #+BEGIN_SRC sh
+          gem list | grep rack
+          # rack (1.5.2)
+          gem uninstall rack
+          gem install rack --version 1.4.0
+       #+END_SRC
+       #+BEGIN_SRC sh
+         yum install sqlite-devel
+         gem install rails --version 3.2.11 --no-ri --no-rdoc
+       #+END_SRC
+    3. [ ] rails new newapp
+    4. [ ] gem install therubyracer
+       
+
 13. [X] Add GitHub key
     #+BEGIN_SRC sh
       ssh-keygen -t rsa -C "your_email@example.com"
